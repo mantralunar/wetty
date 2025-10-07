@@ -29,3 +29,4 @@ USER wetty
 EXPOSE 3000
 # wetty’s CLI entry lives in bin/
 CMD ["node","/app/bin/wetty.js","--port","3000"]
+LABEL org.opencontainers.image.source https://github.com/mantralunar/wetty
