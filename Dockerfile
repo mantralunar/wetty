@@ -1,7 +1,7 @@
 # build stage
 FROM node:20-alpine AS build
 WORKDIR /src
-RUN apk add --no-cache git make g++ python3
+RUN apk add --no-cache git make g++ python3 py3-distutils
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 RUN git clone --depth=1 https://github.com/butlerx/wetty.git
