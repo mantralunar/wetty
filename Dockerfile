@@ -21,12 +21,17 @@ RUN adduser -D -u 10001 wetty
 
 # runtime stage
 WORKDIR /app
-COPY --from=build /src/wetty/build         /app/build
-COPY --from=build /src/wetty/node_modules  /app/node_modules
-COPY --from=build /src/wetty/package.json  /app/package.json
+# Client bundle
+COPY --from=build /src/wetty/build        /app/build
+# Server source (there is no top-level `server/`; it lives under `src/server`)
+COPY --from=build /src/wetty/src          /app/src
+# Runtime deps & metadata
+COPY --from=build /src/wetty/node_modules /app/node_modules
+COPY --from=build /src/wetty/package.json /app/package.json
 
 USER wetty
 EXPOSE 3000
 # wetty’s CLI entry lives in bin/
 CMD ["node","/app/bin/wetty.js","--port","3000"]
 LABEL org.opencontainers.image.source https://github.com/mantralunar/wetty
+
