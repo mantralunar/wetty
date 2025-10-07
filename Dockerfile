@@ -8,7 +8,7 @@ RUN npm i -g husky@9        # <-- ensures 'husky' is on PATH during 'prepare'
 RUN git clone --depth=1 https://github.com/butlerx/wetty.git && cd wetty && pnpm install && pnpm build
 
 # --- runtime stage ---
-FROM node:20-slim AS runtime
+FROM node:20-alpine AS runtime
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN adduser -D -u 10001 wetty
