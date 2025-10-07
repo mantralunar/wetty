@@ -14,6 +14,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN adduser -D -u 10001 wetty
 WORKDIR /app
 ENV NODE_ENV=production
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # copy what’s actually needed
 COPY --from=base ./wetty/node_modules /app/node_modules
