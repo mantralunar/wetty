@@ -15,7 +15,7 @@ ENV NODE_ENV=production
 
 # copy what’s actually needed
 COPY --from=base ./wetty/node_modules /usr/src/app/node_modules
-COPY --from=base ./wetty/dist /usr/src/app/build
+COPY --from=base ./wetty/build /usr/src/app/build
 COPY --from=base ./wetty/package.json /usr/src/app
 USER wetty
 EXPOSE 3000
