@@ -18,13 +18,13 @@ RUN adduser -D -u 10001 wetty
 WORKDIR /app
 
 # copy what’s actually needed
-COPY --from=build /src/wetty/build        /app/build
-COPY --from=build /src/wetty/src          /app/src
-COPY --from=build /src/wetty/node_modules /app/node_modules
-COPY --from=build /src/wetty/package.json /app/package.json
+COPY --from=build /src/wetty/build         /app/build
+COPY --from=build /src/wetty/index.js      /app/index.js
+COPY --from=build /src/wetty/package.json  /app/package.json
+COPY --from=build /src/wetty/node_modules  /app/node_modules
 
 USER wetty
 EXPOSE 3000
 # wetty’s CLI entry lives in bin/
-CMD ["node", "src/server/index.js"]
+CMD ["node", "index.js"]
 LABEL org.opencontainers.image.source https://github.com/mantralunar/wetty
