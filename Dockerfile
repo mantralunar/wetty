@@ -9,11 +9,13 @@ ARG WETTY_REF=main
 
 # grab the source
 RUN git clone --depth=1 -b "$WETTY_REF" https://github.com/butlerx/wetty.git
-
 WORKDIR /src/wetty
 
 # use pnpm (via corepack) like upstream
 RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# prevent husky's prepare script from running in CI
+ENV HUSKY=0
 
 # install deps, build, then drop dev deps
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
@@ -27,7 +29,6 @@ FROM node:20-alpine
 # run as non-root
 RUN adduser -D -u 10001 wetty
 USER wetty
-
 WORKDIR /app
 
 # copy only the built app + production deps
