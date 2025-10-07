@@ -32,12 +32,12 @@ WORKDIR /app
 
 # Copy only what’s needed
 COPY --from=build /src/wetty/build        /app/build
-COPY --from=build /src/wetty/bin          /app/bin
+COPY --from=build /src/wetty/server       /app/server
 COPY --from=build /src/wetty/node_modules /app/node_modules
 COPY --from=build /src/wetty/package.json /app/package.json
-COPY --from=build /src/COMMIT_SHA         /app/COMMIT_SHA
 
-ENV PORT=3000
+# Runtime env & start
+ENV NODE_ENV=production PORT=3000
 EXPOSE 3000
-
-CMD ["node", "/app/bin/wetty.js", "--base", "/", "--port", "3000"]
+USER wetty
+CMD ["node", "server/index.js"]
