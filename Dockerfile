@@ -18,11 +18,10 @@ RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
 # --- runtime stage ---
 FROM node:20-alpine AS runtime
 RUN adduser -D -u 10001 wetty
-WORKDIR /app
 
-# copy what actually exists
+# runtime stage
+WORKDIR /app
 COPY --from=build /src/wetty/build         /app/build
-COPY --from=build /src/wetty/bin           /app/bin
 COPY --from=build /src/wetty/node_modules  /app/node_modules
 COPY --from=build /src/wetty/package.json  /app/package.json
 
