@@ -20,6 +20,8 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 COPY --from=base ./wetty/node_modules /app/node_modules
 COPY --from=base ./wetty/build /app/build
 COPY --from=base ./wetty/package.json /app
+RUN apk add -U coreutils openssh-client sshpass && \
+    mkdir ~/.ssh
 USER wetty
 EXPOSE 3000
 CMD [ "pnpm", "start" ]
