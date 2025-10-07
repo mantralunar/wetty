@@ -3,18 +3,12 @@ FROM node:20-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@latest --activate
-
-WORKDIR /usr/src/app
-COPY . /usr/src/app
-
 RUN apk add --no-cache git make g++ python3 py3-setuptools
 RUN npm i -g husky@9        # <-- ensures 'husky' is on PATH during 'prepare'
-RUN git clone --depth=1 https://github.com/butlerx/wetty.git
-RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile && \
-    pnpm build && \
-    pnpm prune --prod
-
+RUN git clone --depth=1 https://github.com/butlerx/wetty.git && cd wetty && pnpm install && pnpm build
+    
+WORKDIR /usr/src/app
+COPY . /usr/src/app
 
 # --- runtime stage ---
 FROM node:20-alpine AS runtime
