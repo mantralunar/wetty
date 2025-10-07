@@ -1,11 +1,15 @@
 # --- build stage ---
-FROM node:20-alpine AS build
-WORKDIR /src
-RUN apk add --no-cache git make g++ python3 py3-setuptools
+FROM node:20-alpine AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /usr/src/app
+COPY . /usr/src/app
+
+RUN apk add --no-cache git make g++ python3 py3-setuptools
 RUN npm i -g husky@9        # <-- ensures 'husky' is on PATH during 'prepare'
 RUN git clone --depth=1 https://github.com/butlerx/wetty.git
-WORKDIR /src/wetty
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile && \
     pnpm build && \
@@ -15,16 +19,14 @@ RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
 # --- runtime stage ---
 FROM node:20-alpine AS runtime
 RUN adduser -D -u 10001 wetty
-WORKDIR /app
+WORKDIR /usr/src/app
+ENV NODE_ENV=production
 
 # copy what’s actually needed
-COPY --from=build /src/wetty/build         /app/build
-COPY --from=build /src/wetty/index.js      /app/index.js
-COPY --from=build /src/wetty/package.json  /app/package.json
-COPY --from=build /src/wetty/node_modules  /app/node_modules
-
+COPY --from=base /usr/src/app/node_modules /usr/src/app/node_modules
+COPY --from=base /usr/src/app/build /usr/src/app/build
+COPY package.json /usr/src/app
 USER wetty
 EXPOSE 3000
-# wetty’s CLI entry lives in bin/
-CMD ["node", "index.js"]
+CMD [ "pnpm", "start" ]
 LABEL org.opencontainers.image.source https://github.com/mantralunar/wetty
