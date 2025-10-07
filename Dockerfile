@@ -19,7 +19,7 @@ ENV NODE_ENV=production
 # copy what’s actually needed
 COPY --from=base /usr/src/app/node_modules /usr/src/app/node_modules
 COPY --from=base /usr/src/app/build /usr/src/app/build
-COPY package.json /usr/src/app
+COPY --from=base package.json /usr/src/app
 USER wetty
 EXPOSE 3000
 CMD [ "pnpm", "start" ]
