@@ -10,10 +10,14 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 RUN git clone --depth=1 https://github.com/butlerx/wetty.git
 WORKDIR /src/wetty
 
+# ... after cloning and cd /src/wetty
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile && \
     pnpm build && \
-    pnpm prune --prod
+    pnpm prune --prod --ignore-scripts
+# alternatively:
+#    PNPM_SKIP_LIFECYCLE_SCRIPTS=1 pnpm prune --prod
+
 
 
 # runtime stage
