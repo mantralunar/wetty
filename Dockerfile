@@ -8,15 +8,17 @@ RUN npm i -g husky@9        # <-- ensures 'husky' is on PATH during 'prepare'
 RUN git clone --depth=1 https://github.com/butlerx/wetty.git && cd wetty && pnpm install && pnpm build
 
 # --- runtime stage ---
-FROM node:20-alpine AS runtime
+FROM node:20-slim AS runtime
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 RUN adduser -D -u 10001 wetty
-WORKDIR /usr/src/app
+WORKDIR /app
 ENV NODE_ENV=production
 
 # copy what’s actually needed
-COPY --from=base ./wetty/node_modules /usr/src/app/node_modules
-COPY --from=base ./wetty/build /usr/src/app/build
-COPY --from=base ./wetty/package.json /usr/src/app
+COPY --from=base ./wetty/node_modules /app/node_modules
+COPY --from=base ./wetty/build /app/build
+COPY --from=base ./wetty/package.json /app
 USER wetty
 EXPOSE 3000
 CMD [ "pnpm", "start" ]
