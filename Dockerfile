@@ -1,19 +1,20 @@
 # build stage
 FROM node:20-alpine AS build
 WORKDIR /src
-RUN apk add --no-cache git make g++ python3 py3-distutils
+
+# Build deps — setuptools provides distutils for Python 3.12+
+RUN apk add --no-cache git make g++ python3 py3-setuptools
+
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 RUN git clone --depth=1 https://github.com/butlerx/wetty.git
 WORKDIR /src/wetty
 
-# prevent "prepare": "husky install" from running
-ENV HUSKY=0
-
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile && \
     pnpm build && \
     pnpm prune --prod
+
 
 # runtime stage
 FROM node:20-alpine
@@ -27,3 +28,4 @@ ENV NODE_ENV=production PORT=3000
 EXPOSE 3000
 USER wetty
 CMD ["node", "server/index.js"]
+
